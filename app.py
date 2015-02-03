@@ -1,6 +1,6 @@
 from tkinter import Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT
 
-from settings import PROGRAM_TITLE
+from settings import PROGRAM_TITLE, CANVAS_BACKGROUND_COLOR
 
 
 class Application(Frame):
@@ -16,7 +16,7 @@ class Application(Frame):
     def create_widgets(self):
         self.canvas = Canvas(
             self,
-            bg='red',
+            bg=CANVAS_BACKGROUND_COLOR,
             width=2*self.width/3,
             height=self.height,
             bd=0,
