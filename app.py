@@ -1,9 +1,13 @@
 from tkinter import Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT
 
+from settings import PROGRAM_TITLE
+
 
 class Application(Frame):
-    def __init__(self, master=None):
+    def __init__(self):
+        master = Tk()
         Frame.__init__(self, master)
+        master.title(PROGRAM_TITLE)
 
         self.window_geometry()
         self.create_widgets()
@@ -34,11 +38,10 @@ class Application(Frame):
         self.master.geometry('%dx%d+%d+%d' % (width, height, x, y))
         self.pack(fill=BOTH)
 
-
-def main():
-    app = Application(master=Tk())
-    app.mainloop()
+    def run(self):
+        self.mainloop()
 
 
 if __name__ == '__main__':
-    main()
+    app = Application()
+    app.run()
