@@ -1,9 +1,14 @@
-from tkinter import Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT
+from tkinter import (
+    Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT, PROJECTING,
+)
 
-from settings import PROGRAM_TITLE, CANVAS_BACKGROUND_COLOR
+from settings import (
+    PROGRAM_TITLE, CANVAS_BACKGROUND_COLOR, CONTROL_PANEL_BACKGROUND_COLOR,
+)
 
 
 class Application(Frame):
+
     def __init__(self):
         master = Tk()
         Frame.__init__(self, master)
@@ -12,7 +17,8 @@ class Application(Frame):
         self.window_geometry()
         self.create_widgets()
 
-        
+        self.point(100, 100)
+
     def create_widgets(self):
         self.canvas = Canvas(
             self,
@@ -25,9 +31,12 @@ class Application(Frame):
         )
         self.canvas.pack(side=LEFT, fill=BOTH)
         
-        self.control_panel = Frame(self, bg='black', width=self.width/3)
+        self.control_panel = Frame(
+            self,
+            bg=CONTROL_PANEL_BACKGROUND_COLOR,
+            width=self.width/3
+        )
         self.control_panel.pack(side=RIGHT, fill=BOTH)
-
 
     def window_geometry(self, width=780, height=420):
         self.width = width
@@ -40,6 +49,36 @@ class Application(Frame):
 
     def run(self):
         self.mainloop()
+
+    def point(self, x, y):
+        # default_point_radius = 5
+        # self.canvas.create_oval(
+        #     x - default_point_radius,
+        #     y - default_point_radius,
+        #     x + default_point_radius,
+        #     y + default_point_radius,
+        #     fill='black',
+        #     width=0
+        # )
+        point_radius = 2
+        self.canvas.create_line(
+            x-point_radius,
+            y,
+            x+point_radius,
+            y,
+            fill='black',
+            width=1,
+            capstyle=PROJECTING,
+        )
+        self.canvas.create_line(
+            x,
+            y-point_radius,
+            x,
+            y+point_radius,
+            fill='black',
+            width=1,
+            capstyle=PROJECTING,
+        )
 
 
 if __name__ == '__main__':
