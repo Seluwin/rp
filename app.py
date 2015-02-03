@@ -17,8 +17,6 @@ class Application(Frame):
         self.window_geometry()
         self.create_widgets()
 
-        self.point(100, 100)
-
     def create_widgets(self):
         self.canvas = Canvas(
             self,
@@ -51,15 +49,6 @@ class Application(Frame):
         self.mainloop()
 
     def point(self, x, y):
-        # default_point_radius = 5
-        # self.canvas.create_oval(
-        #     x - default_point_radius,
-        #     y - default_point_radius,
-        #     x + default_point_radius,
-        #     y + default_point_radius,
-        #     fill='black',
-        #     width=0
-        # )
         point_radius = 2
         self.canvas.create_line(
             x-point_radius,
