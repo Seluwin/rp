@@ -1,10 +1,18 @@
+from time import sleep
+
 from tkinter import (
-    Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT, PROJECTING,
+    Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT, PROJECTING, Button,
 )
 
 from settings import (
     PROGRAM_TITLE, CANVAS_BACKGROUND_COLOR, CONTROL_PANEL_BACKGROUND_COLOR,
 )
+
+
+def args_for_f(func, *args, **kwargs):
+    def wrap():
+        func(*args, **kwargs)
+    return wrap
 
 
 class Application(Frame):
@@ -18,6 +26,8 @@ class Application(Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        # self.canvas_width = 2*self.width/3
+        # self.canvas_height
         self.canvas = Canvas(
             self,
             bg=CANVAS_BACKGROUND_COLOR,
@@ -28,13 +38,20 @@ class Application(Frame):
             relief=FLAT
         )
         self.canvas.pack(side=LEFT, fill=BOTH)
-        
+
         self.control_panel = Frame(
             self,
             bg=CONTROL_PANEL_BACKGROUND_COLOR,
             width=self.width/3
         )
         self.control_panel.pack(side=RIGHT, fill=BOTH)
+
+        self.button = Button(
+            self.control_panel,
+            text='prd',
+            command=args_for_f(self.matrix_draw, 5)
+        )
+        self.button.pack()
 
     def window_geometry(self, width=780, height=420):
         self.width = width
@@ -68,6 +85,20 @@ class Application(Frame):
             width=1,
             capstyle=PROJECTING,
         )
+
+    def matrix_draw(self, N):
+        print(self.canvas['height'])
+        print(self.canvas['width'])
+        sleep(1)
+        self.config(width=900)
+        self.canvas.config(width=620)
+        print(self.canvas['height'])
+        print(self.canvas['width'])
+
+        startx = int(self.canvas['width']) / N
+        starty = int(self.canvas['height']) / N
+        for i in range(N):
+            self.point(startx/2 + startx*i, starty)
 
 
 if __name__ == '__main__':
