@@ -91,6 +91,7 @@ class Application(Frame):
         )
 
     def matrix_draw(self, N):
+        pass
         # print(self.canvas['height'])
         # print(self.canvas['width'])
         # sleep(1)
