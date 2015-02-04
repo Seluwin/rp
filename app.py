@@ -26,8 +26,6 @@ class Application(Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        # self.canvas_width = 2*self.width/3
-        # self.canvas_height
         self.canvas = Canvas(
             self,
             bg=CANVAS_BACKGROUND_COLOR,
@@ -37,21 +35,27 @@ class Application(Frame):
             highlightthickness=0,
             relief=FLAT
         )
-        self.canvas.pack(side=LEFT, fill=BOTH)
+        self.canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
         self.control_panel = Frame(
             self,
             bg=CONTROL_PANEL_BACKGROUND_COLOR,
             width=self.width/3
         )
-        self.control_panel.pack(side=RIGHT, fill=BOTH)
+        self.control_panel.pack(side=RIGHT, fill=BOTH, expand=1)
 
-        self.button = Button(
+        self.button1 = Button(
             self.control_panel,
             text='prd',
             command=args_for_f(self.matrix_draw, 5)
         )
-        self.button.pack()
+        self.button2 = Button(
+            self.control_panel,
+            text='ja som dlhy dext', 
+            command=args_for_f(self.matrix_draw, 50)
+        )
+        self.button1.pack()
+        self.button2.pack()
 
     def window_geometry(self, width=780, height=420):
         self.width = width
@@ -60,7 +64,7 @@ class Application(Frame):
         x = (self.master.winfo_screenwidth() - width) / 2
         y = (self.master.winfo_screenheight() - height) / 2
         self.master.geometry('%dx%d+%d+%d' % (width, height, x, y))
-        self.pack(fill=BOTH)
+        self.pack(fill=BOTH, expand=1)
 
     def run(self):
         self.mainloop()
@@ -87,18 +91,18 @@ class Application(Frame):
         )
 
     def matrix_draw(self, N):
-        print(self.canvas['height'])
-        print(self.canvas['width'])
-        sleep(1)
-        self.config(width=900)
-        self.canvas.config(width=620)
-        print(self.canvas['height'])
-        print(self.canvas['width'])
+        # print(self.canvas['height'])
+        # print(self.canvas['width'])
+        # sleep(1)
+        # self.config(width=900)
+        # self.canvas.config(width=620)
+        # print(self.canvas['height'])
+        # print(self.canvas['width'])
 
-        startx = int(self.canvas['width']) / N
-        starty = int(self.canvas['height']) / N
-        for i in range(N):
-            self.point(startx/2 + startx*i, starty)
+        # startx = int(self.canvas['width']) / N
+        # starty = int(self.canvas['height']) / N
+        # for i in range(N):
+        #     self.point(startx/2 + startx*i, starty)
 
 
 if __name__ == '__main__':
