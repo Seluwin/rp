@@ -23,13 +23,17 @@ class TransformationInputs(Frame):
 
     def create_elements(self):
         # inputs, button
-        self.e = [Entry(self, width=3) for i in range(9) ]
-        self.label = Label(self, text='Tr.matica')
-        self.label.grid(row=0, columnspan=3)
+        self.e = [Entry(self, width=4) for i in range(9) ]
         for elem in range(len(self.e)):
             self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
-        self.button = Button(self, text='Transform')
-        self.button.grid(row=4, columnspan=3)
+        self.update()
+        self.label = Label(self, text='Tr.matica')
+        self.label.grid(row=0, columnspan=3)
+        self.button_frame = Frame(self, width=self.winfo_width(), height=25)
+        self.button_frame.pack_propagate(0) #tell frame children not control its size!
+        self.button = Button(self.button_frame, text='Tr')
+        self.button_frame.grid(row=4, columnspan=3)
+        self.button.pack(fill=BOTH, expand=1)
 
 
 class Application(Frame):
@@ -57,7 +61,7 @@ class Application(Frame):
         self.control_panel = Frame(
             self,
             bg=CONTROL_PANEL_BACKGROUND_COLOR,
-            width=self.width/3
+            width=self.width/9
         )
         self.control_panel.pack(side=RIGHT, fill=BOTH, expand=1)
 
@@ -74,7 +78,7 @@ class Application(Frame):
         self.button1.pack()
         self.button2.pack()
 
-        self.trans = TransformationInputs(self.control_panel, height=25, width=100, bg='red')
+        self.trans = TransformationInputs(self.control_panel, bg='red')
         self.trans.pack()
         self.trans.create_elements()
 
