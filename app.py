@@ -1,7 +1,7 @@
 from time import sleep
 
 from tkinter import (
-    Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT, PROJECTING, Button,
+    Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT, PROJECTING, Button, Entry, Label,
 )
 
 from settings import (
@@ -13,6 +13,23 @@ def args_for_f(func, *args, **kwargs):
     def wrap():
         func(*args, **kwargs)
     return wrap
+
+
+class TransformationInputs(Frame):
+
+    def __init__(self, *args, **kwargs):
+        Frame.__init__(self, *args, **kwargs)
+        # self.create_elements()
+
+    def create_elements(self):
+        # inputs, button
+        self.e = [Entry(self, width=3) for i in range(9) ]
+        self.label = Label(self, text='Tr.matica')
+        self.label.grid(row=0, columnspan=3)
+        for elem in range(len(self.e)):
+            self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
+        self.button = Button(self, text='Transform')
+        self.button.grid(row=4, columnspan=3)
 
 
 class Application(Frame):
@@ -56,6 +73,10 @@ class Application(Frame):
         )
         self.button1.pack()
         self.button2.pack()
+
+        self.trans = TransformationInputs(self.control_panel, height=25, width=100, bg='red')
+        self.trans.pack()
+        self.trans.create_elements()
 
     def window_geometry(self, width=780, height=420):
         self.width = width
