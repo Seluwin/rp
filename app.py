@@ -86,8 +86,8 @@ class Application(Frame):
         self.canvas = Canvas(
             self,
             bg=CANVAS_BACKGROUND_COLOR,
-            width=2*self.width/3,
-            height=self.height,
+            # width=2*self.width/3,
+            # height=self.height,
             bd=0,
             highlightthickness=0,
             relief=FLAT
@@ -97,9 +97,18 @@ class Application(Frame):
         self.control_panel = Frame(
             self,
             bg=CONTROL_PANEL_BACKGROUND_COLOR,
+            width=500,
             #width=self.width/9
         )
-        self.control_panel.pack(side=RIGHT, fill=BOTH, expand=1)
+        self.control_panel.pack(side=LEFT, fill=Y, expand=0)
+
+        self.ac = Frame(
+            self.control_panel,
+            bg=CONTROL_PANEL_BACKGROUND_COLOR,
+            width=150,
+            #width=self.width/9
+        )
+        self.ac.pack(fill=X, expand=0)
 
         self.button1 = Button(
             self.control_panel,
@@ -153,26 +162,25 @@ class Application(Frame):
         )
 
     def draw_axes(self, col='black', points=5):
-        x,y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
+        x , y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
         mid = x,y
-        length = max(mid[0], mid[1])
-        self.point(mid[0], mid[1])
+        length = max(x, y)
         #draw x
         self.canvas.create_line(
-            mid[0] - length,
-            mid[1],
-            mid[0] + length,
-            mid[1],
+            x - length,
+            y,
+            x + length,
+            y,
             fill=col,
             width=1,
             capstyle=PROJECTING,
         )
         #draw y
         self.canvas.create_line(
-            mid[0],
-            mid[1] - length,
-            mid[0],
-            mid[1] + length,
+            x,
+            y - length,
+            x,
+            y + length,
             fill=col,
             width=1,
             capstyle=PROJECTING,
