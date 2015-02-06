@@ -72,15 +72,64 @@ class TransformationInputs(Frame):
         self.button.pack(fill=BOTH, expand=1)
 
 
+def virtual_to_real_xy(vx ,vy, canvas, N=12):
+    x , y = (canvas.winfo_width() / 2, canvas.winfo_height() / 2)
+    real_width, real_height = x*2, y*2
+    offset = min(x / N, y / N)
+    real_x = (real_width / 2) + vx * offset
+    real_y = (real_height / 2) - (vy * offset)
+    return (real_x, real_y)
+
+
+class Point():
+
+    def __init__(self, vx, vy, canv, visible=True):
+        self.x, self.y = vx, vy
+        self.visible = visible
+        self.canvas = canv
+
+    def draw(self):
+        if not self.visible:
+            return
+        x, y = virtual_to_real_xy(self.x, self.y, self.canvas, 8)
+        point_radius = 2
+        self.canvas.create_line(
+            x-point_radius,
+            y,
+            x+point_radius,
+            y,
+            fill='black',
+            width=1,
+            capstyle=PROJECTING,
+        )
+        self.canvas.create_line(
+            x,
+            y-point_radius,
+            x,
+            y+point_radius,
+            fill='black',
+            width=1,
+            capstyle=PROJECTING,
+        )
+
+
 class Application(Frame):
 
     def __init__(self):
         master = Tk()
         Frame.__init__(self, master)
         master.title(PROGRAM_TITLE)
-
+        self.nuber_of_points = 12
         self.window_geometry()
         self.create_widgets()
+
+   # def virtual_to_real_xy(self, vx ,vy, N=12):
+     #   x , y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
+     #   real_width, real_height = x*2, y*2
+     #   offset = min(x / N, y / N)
+     #   real_x = (real_width / 2) + vx * offset
+     #   real_y = (real_height / 2) - (vy * offset)
+     #   return (real_x, real_y)
 
     def create_widgets(self):
         self.canvas = Canvas(
@@ -123,10 +172,18 @@ class Application(Frame):
                 )
         self.trans.pack()
         self.trans.create_elements()
+        self.points = []
+        for i in range(1,8):
+            for j in range(1,8):
+                self.points.append(Point(i, j, self.canvas))
+
 
     def reset(self):
         self.canvas.delete(ALL)
         self.draw_axes()
+                #self.point(x,y)
+        for pnt in self.points:
+            pnt.draw()
 
     def window_geometry(self, width=780, height=420):
         self.width = width
@@ -161,9 +218,9 @@ class Application(Frame):
             capstyle=PROJECTING,
         )
 
-    def draw_axes(self, col='black', points=5):
+    def draw_axes(self, col='black', points=8):
         x , y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
-        mid = x,y
+        #mid = x,y
         length = max(x, y)
         #draw x
         self.canvas.create_line(
@@ -186,7 +243,7 @@ class Application(Frame):
             capstyle=PROJECTING,
         )
         # markings on axes
-        N = 8
+        N = points
         spacing = min(x,y) / N
         for i in range(1,N):
             self.canvas.create_line(
@@ -195,48 +252,32 @@ class Application(Frame):
                 x + spacing*i,
                 y + 2,
                 fill=col
-                )
+            )
             self.canvas.create_line(
                 x - spacing*i,
                 y - 2,
                 x - spacing*i,
                 y + 2,
                 fill=col
-                )
+            )
             self.canvas.create_line(
                 x - 2,
                 y + spacing*i,
                 x + 2,
                 y + spacing*i,
                 fill=col
-                )
+            )
             self.canvas.create_line(
                 x - 2,
                 y - spacing*i,
                 x + 2,
                 y - spacing*i,
                 fill=col
-                )
-            self.canvas.create_text(
-                x + spacing*i,
-                y + 7,
-                text='%d'% (i)
-                )
-            self.canvas.create_text(
-                x - spacing*i,
-                y + 7,
-                text='%d'% (-i)
-                )
-            self.canvas.create_text(
-                x - 6,
-                y + spacing*i ,
-                text='%d'% (-i)
-                )
-            self.canvas.create_text(
-                x - 6,
-                y - spacing*i ,
-                text='%d'% (i)
-                )
+            )
+            self.canvas.create_text(x + spacing*i, y + 7, text='%d'% (i))
+            self.canvas.create_text(x - spacing*i, y + 7, text='%d'% (-i))
+            self.canvas.create_text(x - 6, y + spacing*i, text='%d'% (-i))
+            self.canvas.create_text(x - 6, y - spacing*i, text='%d'% (i))
         self.canvas.create_text(x + 7, 25, text='y')
         self.canvas.create_text(x*2 - 25, y + 7, text='x')
 
