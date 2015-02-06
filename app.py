@@ -15,6 +15,35 @@ def args_for_f(func, *args, **kwargs):
     return wrap
 
 
+class FloatEntry(Entry):
+    def __init__(self, master, value=0.0, **kwargs):
+        Entry.__init__(self, master, **kwargs)
+        self.insert(0, str(value))
+        vcmd = (self.register(self._is_valid), '%s', '%P')
+        self.configure(vcmd=vcmd, validate='all')
+        self._value = float(value)
+
+    @property
+    def get(self):
+        val = Entry.get(self)
+        if val == '':
+            return self._value
+        return float(val)
+
+    @property
+    def value(self):
+        return float(self.get)
+
+    def _is_valid(self, old_value, new_value):
+        if new_value == '':
+            return True
+        try:
+            self._value = float(new_value)
+            return True
+        except:
+            return False
+
+
 class TransformationInputs(Frame):
 
     def __init__(self, *args, **kwargs):
@@ -23,7 +52,13 @@ class TransformationInputs(Frame):
 
     def create_elements(self):
         # inputs, button
-        self.e = [Entry(self, width=4) for i in range(9) ]
+        self.e = []
+        for i in range(9):
+            if i in (0,4,8):
+                self.e.append( FloatEntry(self, width=4, value=1.0))
+            else:
+                self.e.append( FloatEntry(self, width=4))
+
         for elem in range(len(self.e)):
             self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
         self.update()
@@ -31,9 +66,13 @@ class TransformationInputs(Frame):
         self.label.grid(row=0, columnspan=3)
         self.button_frame = Frame(self, width=self.winfo_width(), height=25)
         self.button_frame.pack_propagate(0) #tell frame children not control its size!
-        self.button = Button(self.button_frame, text='Tr')
+        self.button = Button(self.button_frame, text='Transformuj')
         self.button_frame.grid(row=4, columnspan=3)
         self.button.pack(fill=BOTH, expand=1)
+
+    def print_input(self):
+        for i in range(len(self.e)):
+            print(self.e[i].get)
 
 
 class Application(Frame):
@@ -67,18 +106,15 @@ class Application(Frame):
 
         self.button1 = Button(
             self.control_panel,
-            text='prd',
-            command=args_for_f(self.matrix_draw, 5)
-        )
-        self.button2 = Button(
-            self.control_panel,
-            text='ja som dlhy dext', 
-            command=args_for_f(self.matrix_draw, 50)
+            text='Reset',
+            command= lambda: self.trans.print_input()
         )
         self.button1.pack()
-        self.button2.pack()
 
-        self.trans = TransformationInputs(self.control_panel, bg='red')
+        self.trans = TransformationInputs(
+                self.control_panel, 
+                bg=CONTROL_PANEL_BACKGROUND_COLOR
+                )
         self.trans.pack()
         self.trans.create_elements()
 
@@ -114,6 +150,11 @@ class Application(Frame):
             width=1,
             capstyle=PROJECTING,
         )
+
+    def axis_draw(self, col, points=5):
+        pass
+
+
 
     def matrix_draw(self, N):
         pass
