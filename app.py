@@ -1,7 +1,8 @@
 from time import sleep
 
 from tkinter import (
-    Tk, Frame, Canvas, BOTH, RIGHT, LEFT, FLAT, PROJECTING, Button, Entry, Label,
+    Tk, Frame, Canvas, BOTH, X, Y, RIGHT, LEFT, FLAT, PROJECTING, Button,
+    Entry, Label, W, E, ALL,
 )
 
 from settings import (
@@ -63,16 +64,12 @@ class TransformationInputs(Frame):
             self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
         self.update()
         self.label = Label(self, text='Tr.matica')
-        self.label.grid(row=0, columnspan=3)
+        self.label.grid(row=0, columnspan=3, sticky=W+E)
         self.button_frame = Frame(self, width=self.winfo_width(), height=25)
         self.button_frame.pack_propagate(0) #tell frame children not control its size!
         self.button = Button(self.button_frame, text='Transformuj')
         self.button_frame.grid(row=4, columnspan=3)
         self.button.pack(fill=BOTH, expand=1)
-
-    def print_input(self):
-        for i in range(len(self.e)):
-            print(self.e[i].get)
 
 
 class Application(Frame):
@@ -100,14 +97,14 @@ class Application(Frame):
         self.control_panel = Frame(
             self,
             bg=CONTROL_PANEL_BACKGROUND_COLOR,
-            width=self.width/9
+            #width=self.width/9
         )
         self.control_panel.pack(side=RIGHT, fill=BOTH, expand=1)
 
         self.button1 = Button(
             self.control_panel,
             text='Reset',
-            command= lambda: self.trans.print_input()
+            command=self.reset
         )
         self.button1.pack()
 
@@ -117,6 +114,10 @@ class Application(Frame):
                 )
         self.trans.pack()
         self.trans.create_elements()
+
+    def reset(self):
+        self.canvas.delete(ALL)
+        self.draw_axes()
 
     def window_geometry(self, width=780, height=420):
         self.width = width
@@ -151,12 +152,87 @@ class Application(Frame):
             capstyle=PROJECTING,
         )
 
-    def axis_draw(self, col, points=5):
-        pass
+    def draw_axes(self, col='black', points=5):
+        x,y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
+        mid = x,y
+        length = max(mid[0], mid[1])
+        self.point(mid[0], mid[1])
+        #draw x
+        self.canvas.create_line(
+            mid[0] - length,
+            mid[1],
+            mid[0] + length,
+            mid[1],
+            fill=col,
+            width=1,
+            capstyle=PROJECTING,
+        )
+        #draw y
+        self.canvas.create_line(
+            mid[0],
+            mid[1] - length,
+            mid[0],
+            mid[1] + length,
+            fill=col,
+            width=1,
+            capstyle=PROJECTING,
+        )
+        # markings on axes
+        N = 8
+        spacing = min(x,y) / N
+        for i in range(1,N):
+            self.canvas.create_line(
+                x + spacing*i,
+                y - 2,
+                x + spacing*i,
+                y + 2,
+                fill=col
+                )
+            self.canvas.create_line(
+                x - spacing*i,
+                y - 2,
+                x - spacing*i,
+                y + 2,
+                fill=col
+                )
+            self.canvas.create_line(
+                x - 2,
+                y + spacing*i,
+                x + 2,
+                y + spacing*i,
+                fill=col
+                )
+            self.canvas.create_line(
+                x - 2,
+                y - spacing*i,
+                x + 2,
+                y - spacing*i,
+                fill=col
+                )
+            self.canvas.create_text(
+                x + spacing*i,
+                y + 7,
+                text='%d'% (i)
+                )
+            self.canvas.create_text(
+                x - spacing*i,
+                y + 7,
+                text='%d'% (-i)
+                )
+            self.canvas.create_text(
+                x - 6,
+                y + spacing*i ,
+                text='%d'% (-i)
+                )
+            self.canvas.create_text(
+                x - 6,
+                y - spacing*i ,
+                text='%d'% (i)
+                )
+        self.canvas.create_text(x + 7, 25, text='y')
+        self.canvas.create_text(x*2 - 25, y + 7, text='x')
 
-
-
-    def matrix_draw(self, N):
+    def draw_matrix(self, N):
         pass
         # print(self.canvas['height'])
         # print(self.canvas['width'])
