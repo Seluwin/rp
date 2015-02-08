@@ -123,13 +123,11 @@ class Application(Frame):
         self.window_geometry()
         self.create_widgets()
 
-   # def virtual_to_real_xy(self, vx ,vy, N=12):
-     #   x , y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
-     #   real_width, real_height = x*2, y*2
-     #   offset = min(x / N, y / N)
-     #   real_x = (real_width / 2) + vx * offset
-     #   real_y = (real_height / 2) - (vy * offset)
-     #   return (real_x, real_y)
+    def create_points(self, num_x, num_y):
+        self.points = []
+        for i in range(1, num_x + 1):
+            for j in range(1, num_y + 1):
+                self.points.append(Point(i, j, self.canvas))
 
     def create_widgets(self):
         self.canvas = Canvas(
@@ -172,11 +170,7 @@ class Application(Frame):
                 )
         self.trans.pack()
         self.trans.create_elements()
-        self.points = []
-        for i in range(1,8):
-            for j in range(1,8):
-                self.points.append(Point(i, j, self.canvas))
-
+        self.create_points(8,5)
 
     def reset(self):
         self.canvas.delete(ALL)
@@ -283,19 +277,6 @@ class Application(Frame):
 
     def draw_matrix(self, N):
         pass
-        # print(self.canvas['height'])
-        # print(self.canvas['width'])
-        # sleep(1)
-        # self.config(width=900)
-        # self.canvas.config(width=620)
-        # print(self.canvas['height'])
-        # print(self.canvas['width'])
-
-        # startx = int(self.canvas['width']) / N
-        # starty = int(self.canvas['height']) / N
-        # for i in range(N):
-        #     self.point(startx/2 + startx*i, starty)
-
 
 if __name__ == '__main__':
     app = Application()
