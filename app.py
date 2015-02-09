@@ -112,6 +112,9 @@ class Point():
             capstyle=PROJECTING,
         )
 
+class Points():
+    def __init__(self):
+        pass
 
 class Application(Frame):
 
