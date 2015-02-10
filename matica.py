@@ -1,7 +1,7 @@
 
 
-class matica():
-    def __init__(self,m):
+class Matica():
+    def __init__(self, m):
         a = max([ len(i) for i in m])
         b = min([len(i) for i in m])
         if a != b:
@@ -9,7 +9,7 @@ class matica():
         self.stlpce = a
         self.riadky = len(m)
         self.matrix = m
-        
+
     def vypis(self):
         #print(self.matrix)
         #print('riadkov ',self.riadky)
@@ -18,6 +18,7 @@ class matica():
             for j in i:
                 print(j, end='')
             print()
+
     def __str__(self):
         st = ''
         res = ''
@@ -26,18 +27,18 @@ class matica():
             st = st[1:len(st)-1]
             res += st + '\n'
         return res
-    
+
     def __len__(self):
         return self.riadky
-    
+
     def __iter__(self):
         for x in self.matrix:
             yield x
 
     def __getitem__(self,key):
         return self.matrix[key]
-    
-    def __mul__(self,other):
+
+    def __mul__(self, other):
         if self.stlpce != other.riadky:
             raise Exception('Error:matice nemaju spravne dimenzie')
         riadok = []
@@ -51,12 +52,15 @@ class matica():
                 tmp = 0
             ret.append(riadok)
             riadok = []
-        return matica(ret)
-            
+        return Matica(ret)
+
+
 if __name__ == '__main__':
     print('test')
-    m1 = matica( [ [1,0,5],[0,1,1],[0,0,1 ]])
+    m1 = Matica( [ [1,0,5],[0,1,1],[0,0,1 ]])
     print(m1)
-    m2 = matica( [ [1,1,0],[2,1,1],[1,3,2]])
+    m2 = Matica( [ [1,1,0],[2,1,1],[1,3,2]])
     m3 = m1 * m2
     print(m3)
+    bod = Matica([[2],[2],[1]])
+    print( m2 * bod)

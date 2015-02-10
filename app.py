@@ -9,6 +9,8 @@ from settings import (
     PROGRAM_TITLE, CANVAS_BACKGROUND_COLOR, CONTROL_PANEL_BACKGROUND_COLOR,
 )
 
+from matica import Matica
+
 
 def args_for_f(func, *args, **kwargs):
     def wrap():
@@ -49,7 +51,14 @@ class TransformationInputs(Frame):
 
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
+        #self.parent = args[1]
         # self.create_elements()
+
+    def get_matrix(self):
+        res, tmp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], []
+        for i in range(len(self.e)):
+            res[i % 3][i // 3] = self.e[i].get
+        return Matica(res)
 
     def create_elements(self):
         # inputs, button
@@ -67,7 +76,10 @@ class TransformationInputs(Frame):
         self.label.grid(row=0, columnspan=3, sticky=W+E)
         self.button_frame = Frame(self, width=self.winfo_width(), height=25)
         self.button_frame.pack_propagate(0) #tell frame children not control its size!
-        self.button = Button(self.button_frame, text='Transformuj')
+        self.button = Button(
+            self.button_frame,
+            text='Transformuj',
+            command=  self.master.master.make_transform)
         self.button_frame.grid(row=4, columnspan=3)
         self.button.pack(fill=BOTH, expand=1)
 
@@ -81,12 +93,19 @@ def virtual_to_real_xy(vx ,vy, canvas, N=12):
     return (real_x, real_y)
 
 
-class Point():
+class Point(Matica):
 
     def __init__(self, vx, vy, canv, visible=True):
+        Matica.__init__(self,[[vx], [vy], [1]])
         self.x, self.y = vx, vy
         self.visible = visible
         self.canvas = canv
+
+    def __mul__(self, matrix):
+        m = Matica.__mul__(self,matrix)
+        self.x = m[0][0]
+        self.y = m[0][1]
+        self.matrix = m.matrix
 
     def draw(self):
         if not self.visible:
@@ -110,6 +129,8 @@ class Point():
             fill='black',
             width=1,
             capstyle=PROJECTING,
+
+
         )
 
 class Points():
@@ -131,6 +152,22 @@ class Application(Frame):
         for i in range(1, num_x + 1):
             for j in range(1, num_y + 1):
                 self.points.append(Point(i, j, self.canvas))
+
+    def get_matrix(self, source_entries):
+        pass
+
+    def make_transform(self):
+        tr_matrix = self.trans.get_matrix()
+        for pnt in self.points:
+            print( pnt , '-->')
+            p = tr_matrix * pnt
+            pnt.matrix = p.matrix
+            pnt.x = p.matrix[0][0]
+            pnt.y = p.matrix[1][0]
+            print(pnt)
+        self.redraw()
+        print("sucess")
+        print(self.trans.get_matrix())
 
     def create_widgets(self):
         self.canvas = Canvas(
@@ -176,6 +213,14 @@ class Application(Frame):
         self.create_points(8,5)
 
     def reset(self):
+        self.canvas.delete(ALL)
+        self.draw_axes()
+                #self.point(x,y)
+        self.create_points(8,5)
+        for pnt in self.points:
+            pnt.draw()
+
+    def redraw(self):
         self.canvas.delete(ALL)
         self.draw_axes()
                 #self.point(x,y)
