@@ -63,6 +63,10 @@ class TransformationInputs(Frame):
     def create_elements(self):
         # inputs, button
         self.e = []
+        self.point_entry = []
+        for i in range(3):
+            self.point_entry.append(FloatEntry(self,width=4))
+
         for i in range(9):
             if i in (0,4,8):
                 self.e.append( FloatEntry(self, width=4, value=1.0))
@@ -71,6 +75,11 @@ class TransformationInputs(Frame):
 
         for elem in range(len(self.e)):
             self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
+
+        for i,elem in enumerate(self.point_entry):
+            print(i,elem)
+            elem.grid(row=5, column=i)
+
         self.update()
         self.label = Label(self, text='Tr.matica')
         self.label.grid(row=0, columnspan=3, sticky=W+E)
@@ -80,6 +89,7 @@ class TransformationInputs(Frame):
             self.button_frame,
             text='Transformuj',
             command=  self.master.master.make_transform)
+
         self.button_frame.grid(row=4, columnspan=3)
         self.button.pack(fill=BOTH, expand=1)
 
@@ -129,8 +139,6 @@ class Point(Matica):
             fill='black',
             width=1,
             capstyle=PROJECTING,
-
-
         )
 
 class Points():
@@ -146,6 +154,7 @@ class Application(Frame):
         self.nuber_of_points = 12
         self.window_geometry()
         self.create_widgets()
+        self.redraw()
 
     def create_points(self, num_x, num_y):
         self.points = []
@@ -159,15 +168,13 @@ class Application(Frame):
     def make_transform(self):
         tr_matrix = self.trans.get_matrix()
         for pnt in self.points:
-            print( pnt , '-->')
             p = tr_matrix * pnt
             pnt.matrix = p.matrix
             pnt.x = p.matrix[0][0]
             pnt.y = p.matrix[1][0]
-            print(pnt)
         self.redraw()
-        print("sucess")
-        print(self.trans.get_matrix())
+        #print("sucess")
+        #print(self.trans.get_matrix())
 
     def create_widgets(self):
         self.canvas = Canvas(
@@ -213,17 +220,12 @@ class Application(Frame):
         self.create_points(8,5)
 
     def reset(self):
-        self.canvas.delete(ALL)
-        self.draw_axes()
-                #self.point(x,y)
         self.create_points(8,5)
-        for pnt in self.points:
-            pnt.draw()
+        self.redraw()
 
     def redraw(self):
         self.canvas.delete(ALL)
-        self.draw_axes()
-                #self.point(x,y)
+        self.draw_edge_axes()
         for pnt in self.points:
             pnt.draw()
 
@@ -260,9 +262,63 @@ class Application(Frame):
             capstyle=PROJECTING,
         )
 
-    def draw_axes(self, col='black', points=8):
-        x , y = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
+    def draw_edge_axes(self, col='black', points=8):
+        mx , my = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
+        x, y = mx, my
+        bot_y = my * 2 - 20
+        length = max(x, y)
+        len_x, len_y = 2*x, 2*y
+        OFFSET = 25
+        #draw x
+        self.canvas.create_line(
+            x - length,
+            len_y - OFFSET,
+            x + length,
+            len_y - OFFSET,
+            fill=col,
+            width=1,
+            capstyle=PROJECTING,
+        )
+        #draw y
+        self.canvas.create_line(
+            OFFSET,
+            y - length,
+            OFFSET,
+            y + length,
+            fill=col,
+            width=1,
+            capstyle=PROJECTING,
+        )
+        # markings on axes
+        N = points
+        spacing = min(x,y) / N
+        for i in range(-N, N + 1):
+            print(i)
+            #mark x line
+            self.canvas.create_line(
+                x + spacing*i,
+                len_y - OFFSET - 2,
+                x + spacing*i,
+                len_y - OFFSET + 2,
+                fill=col
+            )
+            #mark y line
+            self.canvas.create_line(
+                OFFSET - 2,
+                y + spacing*i,
+                OFFSET + 2,
+                y + spacing*i,
+                fill=col
+            )
+            self.canvas.create_text(x + spacing*i, len_y - OFFSET + 8, text='%d'% (i))
+            self.canvas.create_text(OFFSET - 7, y + spacing*i, text='%d'% (-i))
+        self.canvas.create_text(OFFSET + 7, 25, text='y')
+        self.canvas.create_text(x*2 - 25, y*2 - OFFSET + 7, text='x')
+
+    def draw_mid_axes(self, col='black', points=8):
+        mx , my = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2)
         #mid = x,y
+        x, y = mx, my
         length = max(x, y)
         #draw x
         self.canvas.create_line(
