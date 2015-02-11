@@ -3,3 +3,6 @@ PROGRAM_TITLE = 'LinTra' # linearne transformacie
 CANVAS_BACKGROUND_COLOR = 'white'
 
 CONTROL_PANEL_BACKGROUND_COLOR = 'gray'
+
+PNTS_ON_X = 5
+PNTS_ON_Y = 5
