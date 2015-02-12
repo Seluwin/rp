@@ -2,7 +2,7 @@ from time import sleep
 
 from tkinter import (
     Tk, Frame, Canvas, BOTH, X, Y, RIGHT, LEFT, BOTTOM, TOP, FLAT, PROJECTING, Button,
-    Entry, Label,Checkbutton, W, E, ALL, BooleanVar, 
+    Entry, Label,Checkbutton, W, E, ALL, BooleanVar, END,
 )
 
 from settings import (
@@ -53,11 +53,11 @@ class TransformationInputs(Frame):
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
         # self.create_elements()
-
+        self.dim = 2
     def get_matrix(self):
         res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         for i in range(len(self.e)):
-            res[i // 2][i % 2] = self.e[i].get
+            res[i // self.dim][i % self.dim] = self.e[i].get
         #print(res)
         return Matica(res)
 
@@ -65,6 +65,12 @@ class TransformationInputs(Frame):
         m = self.get_matrix()
         m.normalize()
        # print(m)
+        self.set_matrix_to_input(m)
+
+    def set_matrix_to_input(self, mat):
+        for i, entry in enumerate(self.e):
+            entry.delete(0, END)
+            entry.insert(0, mat[i // self.dim][i % self.dim])
 
     def create_elements(self):
         # inputs, button
@@ -278,6 +284,8 @@ class Application(Frame):
 
     def reset(self):
         self.canvas.delete(ALL)
+        identity = [[1,0], [0,1]]
+        self.trans.set_matrix_to_input(identity)
         if self.points == []:
             self.create_points(PNTS_ON_X, PNTS_ON_Y)
         else:
