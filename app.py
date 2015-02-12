@@ -1,13 +1,13 @@
 from time import sleep
 
 from tkinter import (
-    Tk, Frame, Canvas, BOTH, X, Y, RIGHT, LEFT, FLAT, PROJECTING, Button,
-    Entry, Label, W, E, ALL,
+    Tk, Frame, Canvas, BOTH, X, Y, RIGHT, LEFT, BOTTOM, TOP, FLAT, PROJECTING, Button,
+    Entry, Label,Checkbutton, W, E, ALL, BooleanVar, 
 )
 
 from settings import (
     PROGRAM_TITLE, CANVAS_BACKGROUND_COLOR, CONTROL_PANEL_BACKGROUND_COLOR,
-    PNTS_ON_X, PNTS_ON_Y
+    PNTS_ON_X, PNTS_ON_Y, POINTS_ON_SCREEN
 )
 
 from matica import Matica
@@ -77,7 +77,6 @@ class TransformationInputs(Frame):
             self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
 
         for i,elem in enumerate(self.point_entry):
-            print(i,elem)
             elem.grid(row=5, column=i)
 
         self.update()
@@ -111,7 +110,7 @@ class TransformationInputs(Frame):
         self.button.pack(fill=BOTH, expand=1)
 
 
-def virtual_to_real_xy(vx ,vy, canvas, N=12):
+def virtual_to_real_xy(vx ,vy, canvas, N=POINTS_ON_SCREEN // 2):
     x , y = (canvas.winfo_width() / 2, canvas.winfo_height() / 2)
     real_width, real_height = x*2, y*2
     offset = min(x / N, y / N)
@@ -137,7 +136,7 @@ class Point(Matica):
     def draw(self):
         if not self.visible:
             return
-        x, y = virtual_to_real_xy(self.x, self.y, self.canvas, 8)
+        x, y = virtual_to_real_xy(self.x, self.y, self.canvas)
         point_radius = 2
         self.canvas.create_line(
             x-point_radius,
@@ -158,9 +157,6 @@ class Point(Matica):
             capstyle=PROJECTING,
         )
 
-class Points():
-    def __init__(self):
-        pass
 
 class Application(Frame):
 
@@ -168,7 +164,7 @@ class Application(Frame):
         master = Tk()
         Frame.__init__(self, master)
         master.title(PROGRAM_TITLE)
-        self.nuber_of_points = 12
+        self.mid_ax = BooleanVar()
         self.points = []
         self.window_geometry()
         self.create_widgets()
@@ -231,10 +227,19 @@ class Application(Frame):
         self.button1.pack()
 
         self.trans = TransformationInputs(
-                self.control_panel, 
-                bg=CONTROL_PANEL_BACKGROUND_COLOR
-                )
+            self.control_panel, 
+            bg=CONTROL_PANEL_BACKGROUND_COLOR
+        )
+        self.check_button1 = Checkbutton(
+            self.control_panel,
+            text='Axes on mid',
+            bg=CONTROL_PANEL_BACKGROUND_COLOR,
+            bd=0,
+            variable=self.mid_ax,
+            onvalue=True, offvalue=False
+        )
         self.trans.pack()
+        self.check_button1.pack(side=TOP)
         self.trans.create_elements()
 
     def reset(self):
@@ -247,7 +252,10 @@ class Application(Frame):
 
     def redraw(self):
         self.canvas.delete(ALL)
-        self.draw_edge_axes()
+        if self.mid_ax.get():
+            self.draw_mid_axes(points=POINTS_ON_SCREEN // 2)
+        else:
+            self.draw_edge_axes(points=POINTS_ON_SCREEN // 2)
         for pnt in self.points:
             pnt.draw()
 
@@ -294,7 +302,6 @@ class Application(Frame):
         N = points
         spacing = min(x,y) / N
         for i in range(-N, N + 1):
-            print(i)
             #mark x line
             self.canvas.create_line(
                 x + spacing*i,
