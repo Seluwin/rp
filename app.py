@@ -54,6 +54,7 @@ class TransformationInputs(Frame):
         Frame.__init__(self, *args, **kwargs)
         # self.create_elements()
         self.dim = 2
+
     def get_matrix(self):
         res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         for i in range(len(self.e)):
