@@ -1,4 +1,4 @@
-
+from math import sqrt
 
 class Matica():
     def __init__(self, m):
@@ -18,6 +18,18 @@ class Matica():
             for j in i:
                 print(j, end='')
             print()
+
+    def normalize(self):
+        sum = 0
+        for i in range(self.riadky):
+            for j in range(len(self.matrix[i])):
+                sum += self.matrix[i][j]**2
+            sum = sqrt(sum)
+            if sum == 0:
+                sum = 1
+            for j in range(len(self.matrix[i])):
+                self.matrix[i][j] /= sum
+            sum = 0
 
     def __str__(self):
         st = ''
@@ -59,8 +71,15 @@ if __name__ == '__main__':
     print('test')
     m1 = Matica( [ [1,0,5],[0,1,1],[0,0,1 ]])
     print(m1)
+    m1.normalize()
+    print('>>>',m1)
     m2 = Matica( [ [1,1,0],[2,1,1],[1,3,2]])
     m3 = m1 * m2
     print(m3)
     bod = Matica([[2],[2],[1]])
     print( m2 * bod)
+    m1 = Matica( [ [1,0,0],[1,1,0],[0,0,0]])
+    m1.normalize()
+    print(m1)
+    m1.normalize()
+    print(m1)

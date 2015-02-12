@@ -57,8 +57,14 @@ class TransformationInputs(Frame):
     def get_matrix(self):
         res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         for i in range(len(self.e)):
-            res[i % 2][i // 2] = self.e[i].get
+            res[i // 2][i % 2] = self.e[i].get
+        #print(res)
         return Matica(res)
+
+    def normalize_matrix(self):
+        m = self.get_matrix()
+        m.normalize()
+       # print(m)
 
     def create_elements(self):
         # inputs, button
@@ -74,7 +80,7 @@ class TransformationInputs(Frame):
                 # self.e.append( FloatEntry(self, width=4))
         self.matrix_add_frame = Frame(self)
         self.matrix_add_frame.grid(row=1, column=0, columnspan=3, rowspan=2) 
-        
+
         for i in range(4):
             if i in (0,3):
                 self.e.append( FloatEntry(self.matrix_add_frame, width=6, value=1.0))
@@ -104,19 +110,33 @@ class TransformationInputs(Frame):
         )
         self.label = Label(self, text='Tr.matica')
         self.label.grid(row=0, columnspan=3, sticky=W+E)
- 
+
         self.button_frame = Frame(self, width=self.winfo_width(), height=25)
-        self.button_frame.pack_propagate(0) #tell frame children not control its size!
+        self.button_normalize_matrix_frame = Frame(
+            self,
+            width=self.winfo_width(),
+            height=25
+        )
+        self.button_frame.pack_propagate(0) #tell frame children not control its size
+        self.button_normalize_matrix_frame.pack_propagate(0) #tell frame children not control its size
         self.button = Button(
             self.button_frame,
             text='Transformuj',
             command=  self.master.master.make_transform
         )
 
+        self.button_normal = Button(
+            self.button_normalize_matrix_frame,
+            text='Normalizuj',
+            command=self.normalize_matrix
+        )
+
         self.button_add_point_frame.grid(row=5, column=2)
         self.button_add_point.pack(fill=BOTH, expand=1)
         self.button_frame.grid(row=4, columnspan=3)
+        self.button_normalize_matrix_frame.grid(row=6, columnspan=3)
         self.button.pack(fill=BOTH, expand=1)
+        self.button_normal.pack(fill=BOTH, expand=1)
 
 
 def virtual_to_real_xy(vx ,vy, canvas, N=POINTS_ON_SCREEN // 2):
