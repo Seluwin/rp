@@ -55,9 +55,9 @@ class TransformationInputs(Frame):
         # self.create_elements()
 
     def get_matrix(self):
-        res, tmp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], []
+        res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         for i in range(len(self.e)):
-            res[i % 3][i // 3] = self.e[i].get
+            res[i % 2][i // 2] = self.e[i].get
         return Matica(res)
 
     def create_elements(self):
@@ -65,16 +65,24 @@ class TransformationInputs(Frame):
         self.e = []
         self.point_entry = []
         for i in range(2):
-            self.point_entry.append(FloatEntry(self,width=4))
+            self.point_entry.append(FloatEntry(self, width=4))
 
-        for i in range(9):
-            if i in (0,4,8):
-                self.e.append( FloatEntry(self, width=4, value=1.0))
+        # for i in range(9):
+            # if i in (0,4,8):
+                # self.e.append( FloatEntry(self, width=4, value=1.0))
+            # else:
+                # self.e.append( FloatEntry(self, width=4))
+        self.matrix_add_frame = Frame(self)
+        self.matrix_add_frame.grid(row=1, column=0, columnspan=3, rowspan=2) 
+        
+        for i in range(4):
+            if i in (0,3):
+                self.e.append( FloatEntry(self.matrix_add_frame, width=6, value=1.0))
             else:
-                self.e.append( FloatEntry(self, width=4))
+                self.e.append( FloatEntry(self.matrix_add_frame, width=6))
 
         for elem in range(len(self.e)):
-            self.e[elem].grid(row=elem // 3 + 1, column=elem % 3)
+            self.e[elem].grid(row=elem // 2, column=elem % 2)
 
         for i,elem in enumerate(self.point_entry):
             elem.grid(row=5, column=i)
@@ -84,15 +92,15 @@ class TransformationInputs(Frame):
             self, 
             width=self.winfo_width()/3,
             height=20
-            )
+        )
         self.button_add_point_frame.pack_propagate(0)
         self.button_add_point = Button(
             self.button_add_point_frame,
             text='+',
             command=lambda: self.master.master.add_point(
-                self.point_entry[0].get,
-                self.point_entry[1].get
-            )
+                                self.point_entry[0].get,
+                                self.point_entry[1].get
+                            )
         )
         self.label = Label(self, text='Tr.matica')
         self.label.grid(row=0, columnspan=3, sticky=W+E)
@@ -102,7 +110,8 @@ class TransformationInputs(Frame):
         self.button = Button(
             self.button_frame,
             text='Transformuj',
-            command=  self.master.master.make_transform)
+            command=  self.master.master.make_transform
+        )
 
         self.button_add_point_frame.grid(row=5, column=2)
         self.button_add_point.pack(fill=BOTH, expand=1)
@@ -165,16 +174,21 @@ class Application(Frame):
         Frame.__init__(self, master)
         master.title(PROGRAM_TITLE)
         self.mid_ax = BooleanVar()
+        self.button1_text = 'Reset'
         self.points = []
         self.window_geometry()
         self.create_widgets()
         self.redraw()
 
     def create_points(self, num_x, num_y):
-        if num_x % 2 == 0:
-            pass
-        for i in range( -num_x//2, num_x//2 ):
-            for j in range( -num_y//2, num_y//2):
+        x_min = -(num_x // 2)
+        x_max = num_x // 2
+        x_delta = num_x % 2
+        y_min = -(num_y // 2)
+        y_max = num_y // 2
+        y_delta = num_y % 2
+        for i in range( x_min, x_max + x_delta ):
+            for j in range( y_min, y_max + y_delta):
                 self.points.append(Point(i, j, self.canvas))
 
     def add_point(self, x, y):
@@ -221,7 +235,7 @@ class Application(Frame):
 
         self.button1 = Button(
             self.control_panel,
-            text='Reset',
+            text=self.button1_text,
             command=self.reset
         )
         self.button1.pack()
@@ -248,6 +262,7 @@ class Application(Frame):
             self.create_points(PNTS_ON_X, PNTS_ON_Y)
         else:
             self.points = []
+            self.button1_text = '+Points'
         self.redraw()
 
     def redraw(self):
